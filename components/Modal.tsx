@@ -21,62 +21,13 @@ const style = {
 
 export interface IOnlyData {
   data: IBoardItem
+  comments: any
 }
 
-export default function TransitionsModal({ data }: IOnlyData) {
+export default function TransitionsModal({ data, comments }: IOnlyData) {
   const [open, setOpen] = React.useState(false)
   const handleOpen = () => setOpen(true)
   const handleClose = () => setOpen(false)
-
-  const [selectedComment, setSelectedComment] = useState(0)
-  const [newComment, setNewComment] = useState(data)
-  const [editComment, setEditComment] = useState(true)
-
-  const addComment = (id:number, e: KeyboardEvent<HTMLTextAreaElement>) => {
-    if (e.key == 'Enter') {
-      const val = e.currentTarget.value
-      let dataId:any = id
-
-      const comment = {
-        id: createId(),
-        content: val
-      }
-
-      let newComment: IBoardItem[] = []
-      newComment.forEach((board) => board.obs?.forEach((obs) => {
-        if (obs.id === dataId) {
-          obs.push(comment)
-        }
-      }))
-      setNewComment(newComment)
-    }
-  }
-
-  function editCommentAction(value: number, e: KeyboardEvent<HTMLTextAreaElement>) {
-    let id = value
-
-    let commentFinal = [...dataT]
-    if (e.key == 'Enter') {
-      const edit = e.currentTarget.value
-      commentFinal.forEach((board) => board.items.forEach((items) =>
-      items.obs.forEach((obs) => {
-          if (obs.id === id) {
-            obs.content = edit
-          }
-        }
-      )))
-      setNewBoard(commentFinal)
-      setEditComment(true)
-    }
-  }
-
-  function deleteComment(value: number) {
-    let id = value
-    console.log(id)
-    
-    setNewComment(data.obs?.splice(id, 1))
-    console.log(data.obs)
-  }
 
   return (
     <div>
@@ -117,29 +68,7 @@ export default function TransitionsModal({ data }: IOnlyData) {
                 )
               })}
                 <Typography>
-                  {data.obs?.map((o) => (
-                    <ul key={o.id}>
-                      {editComment ? (
-                        <li className='commentsListItem'>{o.content}
-                          <p>
-                            <a onClick={() => (setSelectedComment(o.id), setEditComment(false), (e: any) => editCommentAction(id, e))}>✍️</a>
-                            <a onClick={() => (deleteComment(o.id))}>🗑️</a>
-                          </p>
-                        </li>
-                      ) : (
-                        <a className="editCommentForm">
-                          <textarea className="editCommentText" autoFocus rows={1} onKeyDown={(e) => editCommentAction(o.id, e)}>
-                            {o.content}
-                          </textarea>
-                          <button onClick={() => {setEditComment(true)}}>x</button>
-                        </a>
-                      )}
-                    </ul>
-                  ))}
-                  <p>
-                    <textarea className="addCommentForm" rows={1} placeholder={'Adicionar Comentário'}
-                              onKeyDown={(e) => addComment(data.id, e)} />
-                  </p>
+                  {comments}
                 </Typography>
             </ul>
           </Box>
