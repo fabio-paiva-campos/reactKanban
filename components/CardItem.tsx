@@ -1,6 +1,7 @@
 import React from 'react'
 import { Draggable } from 'react-beautiful-dnd'
 import TransitionsModal from './Modal'
+import { ChatAlt2Icon } from '@heroicons/react/outline'
 
 function CardItem({ data, index, excluir, priority, comments }: any) {
   let newID = data.id.toString()
@@ -67,10 +68,10 @@ function CardItem({ data, index, excluir, priority, comments }: any) {
                 return <li key={index}></li>
               })}
               <li className='MocalCall'>
-                <TransitionsModal data={dataT} />
+                <TransitionsModal data={dataT} comments={comments}/>
               </li>
               <li>
-                {comments}
+                <a className="imgChatIcon"><ChatAlt2Icon/>{data.obs.length}</a>
               </li>
               <li>
                 {excluir}
