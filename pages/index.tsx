@@ -2,7 +2,7 @@ import React, { KeyboardEvent, useEffect, useState } from 'react'
 import Layout from '../components/Layout'
 import CardItem from '../components/CardItem'
 import BoardData from '../data/board-data.json'
-import { ChevronDownIcon, PlusIcon, DotsVerticalIcon, PlusCircleIcon, TrashIcon, ChatAlt2Icon, CheckIcon, XIcon } from '@heroicons/react/outline'
+import { ChevronDownIcon, PlusIcon, DotsVerticalIcon, PlusCircleIcon, TrashIcon, CheckIcon, XIcon, ChatAlt2Icon } from '@heroicons/react/outline'
 import { DragDropContext, Droppable } from 'react-beautiful-dnd'
 import { Menu, MenuItem, MenuButton } from '@szhsin/react-menu'
 import '@szhsin/react-menu/dist/index.css'
@@ -32,9 +32,13 @@ function Home() {
   const [selectedBoard, setSelectedBoard] = useState(0)
   const [newBoard, setNewBoard] = useState(BoardData)
   const [editBoard, setEditBoard] = useState(false)
+  const [justCreated, setJustCreated] = useState(false)
 
   const [ready, setReady] = useState(false)
   const [editCard, setEditCard] = useState(false)
+
+  const [selectedComment, setSelectedComment] = useState(0)
+  const [editComment, setEditComment] = useState(true)
 
   useEffect(() => {
     if (typeof window) {
@@ -92,6 +96,7 @@ function Home() {
   }
 
   const editBoardAction = (e: KeyboardEvent<HTMLTextAreaElement>) => {
+    setJustCreated(false)
     editFunction(e, setEditBoard)
   }
 
@@ -124,6 +129,7 @@ function Home() {
   }
 
   const editBoardActionClick = (id: number) => {
+    setJustCreated(false)
     editFunctionClick(id, setEditBoard)
   }
 
@@ -136,6 +142,7 @@ function Home() {
     }
     setNewBoard([...newBoard, board])
     setSelectedBoard(count-1)
+    setJustCreated(true)
     setEditBoard(true)
   }
 
@@ -143,12 +150,23 @@ function Home() {
     let index = value
     if (confirm('Excluir Board?')) {
       const finalBoard: IBoardData[] = [];
-      newBoard.map((item, key)=>{
+      newBoard.map((item, key) => {
         if(key !== index){
           finalBoard.push(item);
         }
         return setNewBoard(finalBoard)
       })
+    }
+  }
+
+  function conditionalDelete(value:number) {
+    let id = value
+
+    if (justCreated == true) {
+      deleteBoard(id)
+      setJustCreated(false)
+    } else {
+      setEditBoard(false)
     }
   }
 
@@ -191,6 +209,61 @@ function Home() {
     setNewBoard(priorityFinal)
   }
 
+  const addComment = (id:number, e: KeyboardEvent<HTMLTextAreaElement> ) => {
+    if (e.key == 'Enter') {
+      const val = e.currentTarget.value
+      let dataId:any = id
+
+      const comment = {
+        id: createId(),
+        content: val
+      }
+
+      let newComment = [...newBoard]
+      newComment.forEach((board) => board.items.forEach((items) => {
+        if (items.id === dataId) {
+          items.obs.push(comment)
+        }
+      }))
+      setNewBoard(newComment)
+      e.currentTarget.value = ''
+    }
+  }
+
+  function editCommentAction(value: number, e: KeyboardEvent<HTMLTextAreaElement>) {
+    let id = value
+
+    let commentFinal = [...newBoard]
+    if (e.key == 'Enter') {
+      const edit = e.currentTarget.value
+      commentFinal.forEach((board) => board.items.forEach((items) =>
+      items.obs.forEach((obs) => {
+          if (obs.id === id) {
+            obs.content = edit
+          }
+        }
+      )))
+      setNewBoard(commentFinal)
+      setEditComment(true)
+    }
+  }
+
+  function deleteComment(value: number) {
+    let id = value
+  
+    let commentFinal = [...newBoard]
+    if (confirm("Excluir Comentário?")) {
+      commentFinal.forEach((board) => board.items.forEach((items) =>
+      items.obs.forEach((obs, index) => {
+          if (obs.id === id) {
+            items.obs.splice(index, 1)
+          }
+        }
+      )))
+      setNewBoard(commentFinal)
+    }
+  }
+
   return (
     <Layout>
       <div className="GeneralAreaKanbanContent">
@@ -229,7 +302,7 @@ function Home() {
                                       {board.name}
                                     </textarea>
                                     <button className="DotsVerticalIcon" onClick={() => editBoardActionClick(id)}><CheckIcon /></button>
-                                    <button className="DotsVerticalIcon" onClick={() => setEditBoard(false)}><XIcon /></button>
+                                    <button className="DotsVerticalIcon" onClick={() => conditionalDelete(id)}><XIcon /></button>
                                   </div>
                                 ) : (
                                   <span>{board.name}</span>
@@ -245,7 +318,7 @@ function Home() {
                               {board.items.length > 0 &&
                                 board.items.map((item, iIndex) => {
                                   return (
-                                    <CardItem key={item.id} data={item} obs={item.obs} index={iIndex} className="CardItemClass"
+                                    <CardItem key={item.id} data={item} index={iIndex} className="CardItemClass"
 
                                     priority = {<Menu menuButton={<MenuButton><ChevronDownIcon className="cardMenuIcon"/></MenuButton>}
                                                 direction={'left'} transition>
@@ -254,8 +327,32 @@ function Home() {
                                                 <MenuItem onClick={() => {setPriority(item.id, 2)}}>Alta Prioridade</MenuItem>
                                                 </Menu>}
 
-                                    comments = {<a className="imgChatIcon"><ChatAlt2Icon/>
-                                                {item.obs?.length}</a>}
+                                    comments = 
+                                    {<>
+                                      {item.obs.map((o, id) => (
+                                        <ul key={o.id}>
+                                          {editComment ? (
+                                            <li className='commentsListItem'>{o.content}
+                                              <p>
+                                                <a onClick={() => (setEditComment(false), (e: any) => editCommentAction(id, e))}>✍️</a>
+                                                <a onClick={() => (deleteComment(o.id))}>🗑️</a>
+                                              </p>
+                                            </li>
+                                          ) : (
+                                            <a className="editCommentForm">
+                                              <textarea className="editCommentText" autoFocus rows={1} onKeyDown={(e) => editCommentAction(o.id, e)}>
+                                                {o.content}
+                                              </textarea>
+                                              <button onClick={() => {setSelectedComment(o.id), setEditComment(true)}}>x</button>
+                                            </a>
+                                          )}
+                                        </ul>
+                                      ))}
+                                      <p>
+                                        <textarea className="addCommentForm" rows={1} placeholder={'Adicionar Comentário'}
+                                                  onKeyDown={(e) => addComment(item.id, e)} />
+                                      </p>
+                                    </>}
 
                                     excluir = {<button onClick={() => {deleteCard(item.id)}}><TrashIcon className='deleteIcon'/></button>}/>
                                   )
