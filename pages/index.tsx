@@ -2,7 +2,14 @@ import React, { KeyboardEvent, useEffect, useState } from 'react'
 import Layout from '../components/Layout'
 import CardItem from '../components/CardItem'
 import BoardData from '../data/board-data.json'
-import { ChevronDownIcon, PlusIcon, DotsVerticalIcon, PlusCircleIcon, TrashIcon, CheckIcon, XIcon, ChatAlt2Icon } from '@heroicons/react/outline'
+
+import AddIcon from '@mui/icons-material/Add';
+import CheckIcon from '@mui/icons-material/Check';
+import CloseIcon from '@mui/icons-material/Close';
+import MoreVertIcon from '@mui/icons-material/MoreVert';
+import DeleteIcon from '@mui/icons-material/Delete';
+import BorderColorIcon from '@mui/icons-material/BorderColor';
+
 import { DragDropContext, Droppable } from 'react-beautiful-dnd'
 import { Menu, MenuItem, MenuButton } from '@szhsin/react-menu'
 import '@szhsin/react-menu/dist/index.css'
@@ -38,7 +45,7 @@ function Home() {
   const [editCard, setEditCard] = useState(false)
 
   const [selectedComment, setSelectedComment] = useState(0)
-  const [editComment, setEditComment] = useState(true)
+  const [editComment, setEditComment] = useState(false)
 
   useEffect(() => {
     if (typeof window) {
@@ -68,7 +75,6 @@ function Home() {
     funcValue: Function,
     itemArray?: any
     ) => {
-    const form = document.getElementById("boardEditForm")
 
     if (e.key == 'Enter') {
       const val = e.currentTarget.value
@@ -106,7 +112,7 @@ function Home() {
     itemArray?: any,
     ) => {
     let val: string
-    val = document.getElementById("boardEditForm")?.value
+    val = (document.getElementById("boardEditForm") as HTMLInputElement).value
 
     if (val.length === 0) {
       funcValue(false)        
@@ -225,8 +231,29 @@ function Home() {
           items.obs.push(comment)
         }
       }))
-      setNewBoard(newComment)
-      e.currentTarget.value = ''
+      setNewBoard(newComment),
+      (document.getElementById("addCommentText") as HTMLInputElement).value = ''
+    }
+  }
+
+  const addCommentClick = (id:number) => {
+    let val: string
+    val = (document.getElementById("addCommentText") as HTMLInputElement).value
+    let dataId:any = id
+
+    if(val !== '' && val !== ' ') {
+      const comment = {
+        id: createId(),
+        content: val
+      }
+      let newComment = [...newBoard]
+      newComment.forEach((board) => board.items.forEach((items) => {
+        if (items.id === dataId) {
+          items.obs.push(comment)
+        }
+      }))
+      setNewBoard(newComment),
+      (document.getElementById("addCommentText") as HTMLInputElement).value = ''
     }
   }
 
@@ -244,7 +271,7 @@ function Home() {
         }
       )))
       setNewBoard(commentFinal)
-      setEditComment(true)
+      setEditComment(false)
     }
   }
 
@@ -270,12 +297,11 @@ function Home() {
         <div className="GeneralKanbanHeader">
           <div className="HeaderTextArea">
             <h4 className="">Kanbão</h4>
-            <ChevronDownIcon className="SetaBaixoIconHeaderTitle"/>
           </div>
           <ul className="CreateNewColumnList">
             <li>
               <button onClick={() => CreateBoardAction()} className="">
-                <PlusIcon className="IconeMaisCreateNewBoard" />
+                <AddIcon className="IconeMaisCreateNewBoard" />
               </button>
             </li>
           </ul>
@@ -297,20 +323,18 @@ function Home() {
                               <span className="BoardTitle">
                                 {editBoard && selectedBoard === id ? (
                                   <div>
-                                    <textarea id="boardEditForm" className="textEdit" autoFocus
-                                    data-id={id} rows={1} onKeyDown={(e) => editBoardAction(e)}>
-                                      {board.name}
-                                    </textarea>
+                                    <textarea id="boardEditForm" className="textEdit" autoFocus defaultValue={board.name}
+                                    data-id={id} rows={1} onKeyDown={(e) => editBoardAction(e)}></textarea>
                                     <button className="DotsVerticalIcon" onClick={() => editBoardActionClick(id)}><CheckIcon /></button>
-                                    <button className="DotsVerticalIcon" onClick={() => conditionalDelete(id)}><XIcon /></button>
+                                    <button className="DotsVerticalIcon" onClick={() => conditionalDelete(id)}><CloseIcon /></button>
                                   </div>
                                 ) : (
                                   <span>{board.name}</span>
                                 )}
                               </span>
-                              <Menu menuButton={<MenuButton><DotsVerticalIcon className="DotsVerticalIcon" /></MenuButton>} transition>
-                                  <MenuItem onClick={() => { setSelectedBoard(id), setEditBoard(true) }}>Editar</MenuItem>
-                                  <MenuItem onClick={() => { deleteBoard(id) }}>Excluir</MenuItem>
+                              <Menu menuButton={<MenuButton><MoreVertIcon className="DotsVerticalIcon" /></MenuButton>} transition>
+                                <MenuItem onClick={() => { setSelectedBoard(id), setEditBoard(true) }}>Editar</MenuItem>
+                                <MenuItem onClick={() => { deleteBoard(id) }}>Excluir</MenuItem>
                               </Menu>
                             </h4>
                             <div className="CardAreaInCollum"
@@ -320,7 +344,7 @@ function Home() {
                                   return (
                                     <CardItem key={item.id} data={item} index={iIndex} className="CardItemClass"
 
-                                    priority = {<Menu menuButton={<MenuButton><ChevronDownIcon className="cardMenuIcon"/></MenuButton>}
+                                    priority = {<Menu menuButton={<MenuButton><MoreVertIcon className="cardMenuIcon"/></MenuButton>}
                                                 direction={'left'} transition>
                                                 <MenuItem onClick={() => {setPriority(item.id, 0)}}>Baixa Prioridade</MenuItem>
                                                 <MenuItem onClick={() => {setPriority(item.id, 1)}}>Média Prioridade</MenuItem>
@@ -329,32 +353,42 @@ function Home() {
 
                                     comments = 
                                     {<>
-                                      {item.obs.map((o, id) => (
-                                        <ul key={o.id}>
-                                          {editComment ? (
-                                            <li className='commentsListItem'>{o.content}
-                                              <p>
-                                                <a onClick={() => (setEditComment(false), (e: any) => editCommentAction(id, e))}>✍️</a>
-                                                <a onClick={() => (deleteComment(o.id))}>🗑️</a>
-                                              </p>
-                                            </li>
-                                          ) : (
-                                            <a className="editCommentForm">
-                                              <textarea className="editCommentText" autoFocus rows={1} onKeyDown={(e) => editCommentAction(o.id, e)}>
-                                                {o.content}
-                                              </textarea>
-                                              <button onClick={() => {setSelectedComment(o.id), setEditComment(true)}}>x</button>
-                                            </a>
-                                          )}
-                                        </ul>
-                                      ))}
-                                      <p>
-                                        <textarea className="addCommentForm" rows={1} placeholder={'Adicionar Comentário'}
+                                      <div className='commentsList'>
+                                        {item.obs.map((o) => {
+                                          return (
+                                            <div key={o.id}>
+                                              {editComment && selectedComment === o.id ? (
+                                                <div className="editCommentForm">
+                                                  <textarea className="editCommentText" autoFocus rows={1} data-id={o.id}
+                                                  onKeyDown={(e) => editCommentAction(o.id, e)} defaultValue={o.content}></textarea>
+                                                  <button className="editCommentIcon" onClick={() => {setSelectedComment(o.id), setEditComment(!editComment)}}>
+                                                    <CloseIcon />
+                                                  </button>
+                                                </div>
+                                              ) : (
+                                                <ul className='commentsListItem'>
+                                                  <li className='commentsListItemText'>{o.content}</li>
+                                                  <li className='commentsListItemIcon'>
+                                                    <a onClick={() => (setSelectedComment(o.id), setEditComment(!editComment), (e: any) => editCommentAction(o.id, e))}>
+                                                      <BorderColorIcon className="commentEditIcon"/>
+                                                    </a>
+                                                    <a onClick={() => (deleteComment(o.id))}><DeleteIcon className="commentDeleteIcon"/></a>
+                                                  </li>                                              
+                                                </ul>
+                                              )}
+                                            </div>
+                                          )
+                                        })}
+                                      </div>
+                                        
+                                      <span className='addCommentArea'>
+                                        <textarea id="addCommentText" className="addCommentForm" rows={1} placeholder={'Adicionar Observação'}
                                                   onKeyDown={(e) => addComment(item.id, e)} />
-                                      </p>
+                                        <button className="addCommentButton" onClick={() => (addCommentClick(item.id))}><CheckIcon /></button>
+                                      </span>
                                     </>}
 
-                                    excluir = {<button onClick={() => {deleteCard(item.id)}}><TrashIcon className='deleteIcon'/></button>}/>
+                                    excluir = {<button onClick={() => {deleteCard(item.id)}}><DeleteIcon className='deleteIcon'/></button>}/>
                                   )
                                 })}
                               {provided.placeholder}
@@ -371,7 +405,7 @@ function Home() {
                                 className="ButtonAddTask"
                                 onClick={() => { setSelectedBoard(id), setEditCard(true) }}>
                                 <span>Adicionar Card</span>
-                                <PlusCircleIcon className="PlusCircleIcon" />
+                                <AddIcon className="PlusCircleIcon" />
                               </button>
                             )}
                           </div>
