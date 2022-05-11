@@ -6,11 +6,13 @@
   border-radius: 0.375rem;
 
   .LabelPriorityCardGreen {
-    background-color: #059669;
+    background-color: #2fde2f;
   }
-  .LabelPriorityCardBlue {
-    background-color: #2563eb;
+  
+  .LabelPriorityCardOrange {
+    background-color: #eac20f;
   }
+  
   .LabelPriorityCardRed {
     background-color: #dc2626;
   }
@@ -29,7 +31,7 @@
   .cardMenuIcon {
     align-items: center;
     width: 30px;
-    color: gray;
+    color: #696969;
     padding-left: 0.5rem;
   }
 
