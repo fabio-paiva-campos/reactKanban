@@ -1,11 +1,14 @@
-import React, { KeyboardEvent, useState } from 'react'
+import React from 'react'
 import Backdrop from '@mui/material/Backdrop'
 import Box from '@mui/material/Box'
 import Modal from '@mui/material/Modal'
 import Fade from '@mui/material/Fade'
 import Button from '@mui/material/Button'
 import Typography from '@mui/material/Typography'
-import { IBoardItem, createId } from '../pages/index'
+
+import CloseIcon from '@mui/icons-material/Close';
+
+import { IBoardItem } from '../pages/index'
 
 const style = {
   position: 'absolute' as 'absolute',
@@ -45,7 +48,7 @@ export default function TransitionsModal({ data, comments }: IOnlyData) {
         <Fade in={open}>
           <Box sx={style}>
             <button className="close-modal" onClick={handleClose}>
-              X
+              <CloseIcon />
             </button>
             <ul>
               <h2 className="TitleModalInfo">{data.title}</h2>
@@ -67,10 +70,10 @@ export default function TransitionsModal({ data, comments }: IOnlyData) {
                   </li>
                 )
               })}
-                <Typography>
-                  {comments}
-                </Typography>
             </ul>
+              <p className='divider'></p>
+              <p className='commentsLabel'>Observações:</p>
+              {comments}
           </Box>
         </Fade>
       </Modal>
