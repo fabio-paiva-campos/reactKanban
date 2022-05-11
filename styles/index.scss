@@ -6,7 +6,6 @@
 
   .GeneralKanbanHeader {
     display: flex;
-    display: flex;
     flex: 0 1 auto;
     justify-content: space-between;
 
@@ -61,7 +60,7 @@
     margin-bottom: 1.25rem;
     grid-template-columns: repeat(4, minmax(0, 1fr));
     gap: 1.25rem;
-    overflow: scroll;
+    overflow-x: scroll;
     padding: 40px 0;
 
     .CollumGeneralArea {
@@ -107,7 +106,7 @@
         }
 
         .DotsVerticalIcon {
-          color: #878787;
+          color: #696969;
           width: 1.25rem;
           height: 1.25rem;
           margin-left: 0.5rem;
@@ -142,7 +141,7 @@
         }
 
         .deleteIcon {
-          color: #6b7280;
+          color: #696969;
           width: 1.2rem;
           margin-left: 8.5rem;
         }
