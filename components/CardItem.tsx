@@ -11,9 +11,9 @@ function CardItem({ data, index, excluir, priority, comments }: any) {
 
   let newPriorityColor =
     data.priority === 0
-      ? 'LabelPriorityCardBlue'
-      : data.priority === 1
       ? 'LabelPriorityCardGreen'
+      : data.priority === 1
+      ? 'LabelPriorityCardOrange'
       : 'LabelPriorityCardRed'
 
   let newPriorityTitle =
