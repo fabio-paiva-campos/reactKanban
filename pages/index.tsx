@@ -215,36 +215,21 @@ function Home() {
     setNewBoard(priorityFinal)
   }
 
-  const addComment = (id:number, e: KeyboardEvent<HTMLTextAreaElement> ) => {
-    if (e.key == 'Enter') {
-      const val = e.currentTarget.value
-      let dataId:any = id
-
-      const comment = {
-        id: createId(),
-        content: val
-      }
-
-      let newComment = [...newBoard]
-      newComment.forEach((board) => board.items.forEach((items) => {
-        if (items.id === dataId) {
-          items.obs.push(comment)
-        }
-      }))
-      setNewBoard(newComment),
-      (document.getElementById("addCommentText") as HTMLInputElement).value = ''
-    }
-  }
-
-  const addCommentClick = (id:number) => {
+  const addComment = (id:number) => {
     let val: string
     val = (document.getElementById("addCommentText") as HTMLInputElement).value
     let dataId:any = id
 
+    var today = new Date()
+    let dateTime: string = 'Adc. em ' + today.getDate() + '/' + (today.getMonth() + 1) + '/' + today.getFullYear() +
+                            ' às ' + today.getHours() + ':' + today.getMinutes()
+
     if(val !== '' && val !== ' ') {
       const comment = {
         id: createId(),
-        content: val
+        content: val,
+        add: dateTime,
+        edit: ''
       }
       let newComment = [...newBoard]
       newComment.forEach((board) => board.items.forEach((items) => {
@@ -259,6 +244,9 @@ function Home() {
 
   function editCommentAction(value: number, e: KeyboardEvent<HTMLTextAreaElement>) {
     let id = value
+    var today = new Date()
+    let dateTime: string = 'Editado em ' + today.getDate() + '/' + (today.getMonth() + 1) + '/' + today.getFullYear() +
+                            ' às ' + today.getHours() + ':' + today.getMinutes()
 
     let commentFinal = [...newBoard]
     if (e.key == 'Enter') {
@@ -267,12 +255,35 @@ function Home() {
       items.obs.forEach((obs) => {
           if (obs.id === id) {
             obs.content = edit
+            obs.edit = dateTime
           }
         }
       )))
       setNewBoard(commentFinal)
       setEditComment(false)
     }
+  }
+
+  function editCommentActionClick(value: number) {
+    let id = value
+    let edit: string
+    edit = (document.getElementById("editCommentText") as HTMLInputElement).value
+
+    var today = new Date()
+    let dateTime: string = 'Editado em ' + today.getDate() + '/' + (today.getMonth() + 1) + '/' + today.getFullYear() +
+                            ' às ' + today.getHours() + ':' + today.getMinutes()
+
+    let commentFinal = [...newBoard]
+    commentFinal.forEach((board) => board.items.forEach((items) =>
+    items.obs.forEach((obs) => {
+        if (obs.id === id) {
+          obs.content = edit
+          obs.edit = dateTime
+        }
+      }
+    )))
+    setNewBoard(commentFinal)
+    setEditComment(false)
   }
 
   function deleteComment(value: number) {
@@ -359,21 +370,38 @@ function Home() {
                                             <div key={o.id}>
                                               {editComment && selectedComment === o.id ? (
                                                 <div className="editCommentForm">
-                                                  <textarea className="editCommentText" autoFocus rows={1} data-id={o.id}
-                                                  onKeyDown={(e) => editCommentAction(o.id, e)} defaultValue={o.content}></textarea>
-                                                  <button className="editCommentIcon" onClick={() => {setSelectedComment(o.id), setEditComment(!editComment)}}>
-                                                    <CloseIcon />
-                                                  </button>
+                                                  <ul>
+                                                    <li>
+                                                      <textarea id="editCommentText" className="editCommentText" autoFocus rows={3} data-id={o.id}
+                                                      onKeyDown={(e) => editCommentAction(o.id, e)} defaultValue={o.content}></textarea>
+                                                    </li>
+                                                    <li>
+                                                      <button className="editCommentIcon" onClick={() => {editCommentActionClick(o.id), setSelectedComment(o.id),
+                                                        setEditComment(!editComment)}}>
+                                                        <CheckIcon />
+                                                      </button>
+                                                      <button className="editCommentIcon" onClick={() => {setSelectedComment(o.id), setEditComment(!editComment)}}>
+                                                        <CloseIcon />
+                                                      </button>
+                                                    </li>
+                                                  </ul>
                                                 </div>
                                               ) : (
                                                 <ul className='commentsListItem'>
-                                                  <li className='commentsListItemText'>{o.content}</li>
-                                                  <li className='commentsListItemIcon'>
+                                                  <style>{`#p-wrap {white-space: pre-line;}`}</style>
+                                                  <li id="p-wrap" className='commentsListItemText'>{o.content}</li>
+                                                  <li className='commentDateTime'>
+                                                    {o.add}
+                                                  </li>
+                                                  <li className='commentDateTime'>
+                                                    {o.edit}
+                                                  </li>
+                                                  <li className='commentsBottom'>
                                                     <a onClick={() => (setSelectedComment(o.id), setEditComment(!editComment), (e: any) => editCommentAction(o.id, e))}>
                                                       <BorderColorIcon className="commentEditIcon"/>
                                                     </a>
                                                     <a onClick={() => (deleteComment(o.id))}><DeleteIcon className="commentDeleteIcon"/></a>
-                                                  </li>                                              
+                                                  </li>                                           
                                                 </ul>
                                               )}
                                             </div>
@@ -382,9 +410,8 @@ function Home() {
                                       </div>
                                         
                                       <span className='addCommentArea'>
-                                        <textarea id="addCommentText" className="addCommentForm" rows={1} placeholder={'Adicionar Observação'}
-                                                  onKeyDown={(e) => addComment(item.id, e)} />
-                                        <button className="addCommentButton" onClick={() => (addCommentClick(item.id))}><CheckIcon /></button>
+                                        <textarea id="addCommentText" className="addCommentForm" rows={1} placeholder={'Adicionar Observação'}/>
+                                        <button className="addCommentButton" onClick={() => (addComment(item.id))}><CheckIcon /></button>
                                       </span>
                                     </>}
 
@@ -396,7 +423,7 @@ function Home() {
 
                             {editCard && selectedBoard === id ? (
                               <div className="AroundTextAreaAddTask">
-                                <textarea id="taskTitle" className="addTaskForm" autoFocus rows={3} placeholder=" Descrição do Card"
+                                <textarea id="taskTitle" className="addTaskForm" autoFocus rows={3} placeholder="Descrição do Card"
                                 data-id={id} onKeyDown={(e) => createCard(e)} />
                                 <button onClick={() => {setEditCard(false)}}>x</button>
                               </div>
