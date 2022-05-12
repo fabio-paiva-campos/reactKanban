@@ -242,29 +242,7 @@ function Home() {
     }
   }
 
-  function editCommentAction(value: number, e: KeyboardEvent<HTMLTextAreaElement>) {
-    let id = value
-    var today = new Date()
-    let dateTime: string = 'Editado em ' + today.getDate() + '/' + (today.getMonth() + 1) + '/' + today.getFullYear() +
-                            ' às ' + today.getHours() + ':' + today.getMinutes()
-
-    let commentFinal = [...newBoard]
-    if (e.key == 'Enter') {
-      const edit = e.currentTarget.value
-      commentFinal.forEach((board) => board.items.forEach((items) =>
-      items.obs.forEach((obs) => {
-          if (obs.id === id) {
-            obs.content = edit
-            obs.edit = dateTime
-          }
-        }
-      )))
-      setNewBoard(commentFinal)
-      setEditComment(false)
-    }
-  }
-
-  function editCommentActionClick(value: number) {
+  function editCommentAction(value: number) {
     let id = value
     let edit: string
     edit = (document.getElementById("editCommentText") as HTMLInputElement).value
@@ -322,7 +300,7 @@ function Home() {
             <div className="BoardCollumGeneral">
               {newBoard.map((board, id) => {
                 return (
-                  <div key={board.name}>
+                  <div key={board.id}>
                     <Droppable droppableId={id.toString()}>
                       {(provided, snapshot) => (
                         <div {...provided.droppableProps} ref={provided.innerRef}>
@@ -372,11 +350,10 @@ function Home() {
                                                 <div className="editCommentForm">
                                                   <ul>
                                                     <li>
-                                                      <textarea id="editCommentText" className="editCommentText" autoFocus rows={3} data-id={o.id}
-                                                      onKeyDown={(e) => editCommentAction(o.id, e)} defaultValue={o.content}></textarea>
+                                                      <textarea id="editCommentText" className="editCommentText" autoFocus rows={3} data-id={o.id} defaultValue={o.content}/>
                                                     </li>
                                                     <li>
-                                                      <button className="editCommentIcon" onClick={() => {editCommentActionClick(o.id), setSelectedComment(o.id),
+                                                      <button className="editCommentIcon" onClick={() => {editCommentAction(o.id), setSelectedComment(o.id),
                                                         setEditComment(!editComment)}}>
                                                         <CheckIcon />
                                                       </button>
@@ -397,7 +374,7 @@ function Home() {
                                                     {o.edit}
                                                   </li>
                                                   <li className='commentsBottom'>
-                                                    <a onClick={() => (setSelectedComment(o.id), setEditComment(!editComment), (e: any) => editCommentAction(o.id, e))}>
+                                                    <a onClick={() => (setSelectedComment(o.id), setEditComment(!editComment))}>
                                                       <BorderColorIcon className="commentEditIcon"/>
                                                     </a>
                                                     <a onClick={() => (deleteComment(o.id))}><DeleteIcon className="commentDeleteIcon"/></a>
