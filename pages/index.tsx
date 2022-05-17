@@ -153,15 +153,17 @@ function Home() {
   }
 
   function deleteBoard(value: number) {
-    let index = value
+    let id = value
+    console.log(id)
+
+    let boardsFinal = [...newBoard]
     if (confirm('Excluir Board?')) {
-      const finalBoard: IBoardData[] = [];
-      newBoard.map((item, key) => {
-        if(key !== index){
-          finalBoard.push(item);
+      boardsFinal.forEach((board, index) => {
+        if (board.id === id) {
+          boardsFinal.splice(index, 1)
         }
-        return setNewBoard(finalBoard)
-      })
+      });
+      setNewBoard(boardsFinal)
     }
   }
 
@@ -315,7 +317,7 @@ function Home() {
                                     <textarea id="boardEditForm" className="textEdit" autoFocus defaultValue={board.name}
                                     data-id={id} rows={1} onKeyDown={(e) => editBoardAction(e)}></textarea>
                                     <button className="DotsVerticalIcon" onClick={() => editBoardActionClick(id)}><CheckIcon /></button>
-                                    <button className="DotsVerticalIcon" onClick={() => conditionalDelete(id)}><CloseIcon /></button>
+                                    <button className="DotsVerticalIcon" onClick={() => conditionalDelete(board.id)}><CloseIcon /></button>
                                   </div>
                                 ) : (
                                   <span>{board.name}</span>
@@ -323,7 +325,7 @@ function Home() {
                               </span>
                               <Menu menuButton={<MenuButton><MoreVertIcon className="DotsVerticalIcon" /></MenuButton>} transition>
                                 <MenuItem onClick={() => { setSelectedBoard(id), setEditBoard(true) }}>Editar</MenuItem>
-                                <MenuItem onClick={() => { deleteBoard(id) }}>Excluir</MenuItem>
+                                <MenuItem onClick={() => { deleteBoard(board.id) }}>Excluir</MenuItem>
                               </Menu>
                             </h4>
                             <div className="CardAreaInCollum"
