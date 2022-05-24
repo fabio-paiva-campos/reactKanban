@@ -44,7 +44,7 @@ export default function TransitionsModal({ data }: IOnlyData) {
   const addComment = (id: any) => {
     let val: string
     val = (document.getElementById("addCommentText") as HTMLInputElement).value
-    let dataId:any = id
+    let dataId:number = Number(id)
 
     var today = new Date()
     let dateTime: string = 'Adc. em ' + today.getDate() + '/' + (today.getMonth() + 1) + '/' + today.getFullYear() +
