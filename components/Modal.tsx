@@ -13,7 +13,7 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import BorderColorIcon from '@mui/icons-material/BorderColor';
 import CheckIcon from '@mui/icons-material/Check';
 
-import {IBoardItem} from '../pages'
+import {IBoardItem} from '../hooks/Context'
 import {createId} from '../pages/index'
 
 const style = {

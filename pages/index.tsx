@@ -13,22 +13,6 @@ import '@szhsin/react-menu/dist/index.css'
 import '@szhsin/react-menu/dist/transitions/slide.css';
 import { useAppContext } from '../hooks/Context';
 
-export interface IBoardItem {
-  id?: number;
-  priority?: number;
-  title?: string;
-  cnpj?: string;
-  porte?: number;
-  obs?: any[];
-  info?: any[];
-}
-
-export interface IBoardData {
-  id: number;
-  name: string;
-  items: IBoardItem[];
-}
-
 export function createId() {
   return Math.random()
 }
@@ -203,7 +187,7 @@ function Home() {
         {ready && (
           <DragDropContext onDragEnd={onDragEnd}>
             <div className="BoardCollumGeneral">
-              {newBoard.map((board: any, id: any) => {
+              {newBoard?.map((board: any, id: any) => {
                 return (
                   <div key={board.id}>
                     <Droppable droppableId={id.toString()}>
@@ -233,7 +217,7 @@ function Home() {
                             </h4>
                             <div className="CardAreaInCollum"
                             style={{ maxHeight: 'calc(100vh - 290px)' }}>
-                              {board.items.length > 0 &&
+                              {board.items?.length > 0 &&
                                 board.items.map((item: any, iIndex: any) => {
                                   return (
                                     <CardItem key={item.id} data={item} index={iIndex} className="CardItemClass" />
