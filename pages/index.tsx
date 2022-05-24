@@ -1,19 +1,17 @@
 import React, { KeyboardEvent, useEffect, useState } from 'react'
 import Layout from '../components/Layout'
 import CardItem from '../components/CardItem'
-import BoardData from '../data/board-data.json'
 
 import AddIcon from '@mui/icons-material/Add';
 import CheckIcon from '@mui/icons-material/Check';
 import CloseIcon from '@mui/icons-material/Close';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
-import DeleteIcon from '@mui/icons-material/Delete';
-import BorderColorIcon from '@mui/icons-material/BorderColor';
 
 import { DragDropContext, Droppable } from 'react-beautiful-dnd'
 import { Menu, MenuItem, MenuButton } from '@szhsin/react-menu'
 import '@szhsin/react-menu/dist/index.css'
 import '@szhsin/react-menu/dist/transitions/slide.css';
+import { useAppContext } from '../hooks/Context';
 
 export interface IBoardItem {
   id?: number;
@@ -37,15 +35,12 @@ export function createId() {
 
 function Home() {
   const [selectedBoard, setSelectedBoard] = useState(0)
-  const [newBoard, setNewBoard] = useState(BoardData)
+  const [newBoard, setNewBoard] = useAppContext()
   const [editBoard, setEditBoard] = useState(false)
   const [justCreated, setJustCreated] = useState(false)
 
   const [ready, setReady] = useState(false)
   const [editCard, setEditCard] = useState(false)
-
-  const [selectedComment, setSelectedComment] = useState(0)
-  const [editComment, setEditComment] = useState(false)
 
   useEffect(() => {
     if (typeof window) {
@@ -190,98 +185,6 @@ function Home() {
     editFunction(e, setEditCard, item)
   }
 
-  function deleteCard(value: number) {
-    let id = value
-  
-    let cardsFinal = [...newBoard]
-    if (confirm("Excluir Card?")) {
-      cardsFinal.forEach((board) => board.items.forEach((items, index) => {
-        if (items.id === id) {
-          board.items.splice(index, 1)
-        }
-      }));
-      setNewBoard(cardsFinal)
-    }
-  }
-
-  function setPriority(value: number, priority: number) {
-    let prior = priority
-    let id = value
-
-    let priorityFinal = [...newBoard]
-    priorityFinal.forEach((board) => board.items.forEach((items) => {
-      if (items.id === id) {
-        items.priority = prior
-      }
-    }))
-    setNewBoard(priorityFinal)
-  }
-
-  const addComment = (id:number) => {
-    let val: string
-    val = (document.getElementById("addCommentText") as HTMLInputElement).value
-    let dataId:any = id
-
-    var today = new Date()
-    let dateTime: string = 'Adc. em ' + today.getDate() + '/' + (today.getMonth() + 1) + '/' + today.getFullYear() +
-                            ' às ' + today.getHours() + ':' + today.getMinutes()
-
-    if(val !== '' && val !== ' ') {
-      const comment = {
-        id: createId(),
-        content: val,
-        add: dateTime,
-        edit: ''
-      }
-      let newComment = [...newBoard]
-      newComment.forEach((board) => board.items.forEach((items) => {
-        if (items.id === dataId) {
-          items.obs.push(comment)
-        }
-      }))
-      setNewBoard(newComment),
-      (document.getElementById("addCommentText") as HTMLInputElement).value = ''
-    }
-  }
-
-  function editCommentAction(value: number) {
-    let id = value
-    let edit: string
-    edit = (document.getElementById("editCommentText") as HTMLInputElement).value
-
-    var today = new Date()
-    let dateTime: string = 'Editado em ' + today.getDate() + '/' + (today.getMonth() + 1) + '/' + today.getFullYear() +
-                            ' às ' + today.getHours() + ':' + today.getMinutes()
-
-    let commentFinal = [...newBoard]
-    commentFinal.forEach((board) => board.items.forEach((items) =>
-    items.obs.forEach((obs) => {
-        if (obs.id === id) {
-          obs.content = edit
-          obs.edit = dateTime
-        }
-      }
-    )))
-    setNewBoard(commentFinal)
-    setEditComment(false)
-  }
-
-  function deleteComment(value: number) {
-    let id = value
-  
-    let commentFinal = [...newBoard]
-    if (confirm("Excluir Comentário?")) {
-      commentFinal.forEach((board) => board.items.forEach((items) =>
-      items.obs.forEach((obs, index) => {
-          if (obs.id === id) {
-            items.obs.splice(index, 1)
-          }
-        }
-      )))
-      setNewBoard(commentFinal)
-    }
-  }
-
   return (
     <Layout>
       <div className="GeneralAreaKanbanContent">
@@ -300,7 +203,7 @@ function Home() {
         {ready && (
           <DragDropContext onDragEnd={onDragEnd}>
             <div className="BoardCollumGeneral">
-              {newBoard.map((board, id) => {
+              {newBoard.map((board: any, id: any) => {
                 return (
                   <div key={board.id}>
                     <Droppable droppableId={id.toString()}>
@@ -331,70 +234,9 @@ function Home() {
                             <div className="CardAreaInCollum"
                             style={{ maxHeight: 'calc(100vh - 290px)' }}>
                               {board.items.length > 0 &&
-                                board.items.map((item, iIndex) => {
+                                board.items.map((item: any, iIndex: any) => {
                                   return (
-                                    <CardItem key={item.id} data={item} index={iIndex} className="CardItemClass"
-
-                                    priority = {<Menu menuButton={<MenuButton><MoreVertIcon className="cardMenuIcon"/></MenuButton>}
-                                                direction={'left'} transition>
-                                                <MenuItem onClick={() => {setPriority(item.id, 0)}}>Baixa Prioridade</MenuItem>
-                                                <MenuItem onClick={() => {setPriority(item.id, 1)}}>Média Prioridade</MenuItem>
-                                                <MenuItem onClick={() => {setPriority(item.id, 2)}}>Alta Prioridade</MenuItem>
-                                                </Menu>}
-
-                                    comments = 
-                                    {<>
-                                      <div className='commentsList'>
-                                        {item.obs.map((o) => {
-                                          return (
-                                            <div key={o.id}>
-                                              {editComment && selectedComment === o.id ? (
-                                                <div className="editCommentForm">
-                                                  <ul>
-                                                    <li>
-                                                      <textarea id="editCommentText" className="editCommentText" autoFocus rows={3} data-id={o.id} defaultValue={o.content}/>
-                                                    </li>
-                                                    <li>
-                                                      <button className="editCommentIcon" onClick={() => {editCommentAction(o.id), setSelectedComment(o.id),
-                                                        setEditComment(!editComment)}}>
-                                                        <CheckIcon />
-                                                      </button>
-                                                      <button className="editCommentIcon" onClick={() => {setSelectedComment(o.id), setEditComment(!editComment)}}>
-                                                        <CloseIcon />
-                                                      </button>
-                                                    </li>
-                                                  </ul>
-                                                </div>
-                                              ) : (
-                                                <ul className='commentsListItem'>
-                                                  <style>{`#p-wrap {white-space: pre-line;}`}</style>
-                                                  <li id="p-wrap" className='commentsListItemText'>{o.content}</li>
-                                                  <li className='commentDateTime'>
-                                                    {o.add}
-                                                  </li>
-                                                  <li className='commentDateTime'>
-                                                    {o.edit}
-                                                  </li>
-                                                  <li className='commentsBottom'>
-                                                    <a onClick={() => (setSelectedComment(o.id), setEditComment(!editComment))}>
-                                                      <BorderColorIcon className="commentEditIcon"/>
-                                                    </a>
-                                                    <a onClick={() => (deleteComment(o.id))}><DeleteIcon className="commentDeleteIcon"/></a>
-                                                  </li>                                           
-                                                </ul>
-                                              )}
-                                            </div>
-                                          )
-                                        })}
-                                      </div>
-                                        
-                                      <span className='addCommentArea'>
-                                        <textarea id="addCommentText" className="addCommentForm" rows={1} placeholder={'Adicionar Observação'}/>
-                                        <button className="addCommentButton" onClick={() => (addComment(item.id))}><CheckIcon /></button>
-                                      </span>
-                                    </>}
-
-                                    excluir = {<button onClick={() => {deleteCard(item.id)}}><DeleteIcon className='deleteIcon'/></button>}/>
+                                    <CardItem key={item.id} data={item} index={iIndex} className="CardItemClass" />
                                   )
                                 })}
                               {provided.placeholder}

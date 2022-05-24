@@ -4,9 +4,14 @@ import '../styles/index.scss'
 import '../styles/cardItem.scss'
 import '../styles/modal.scss'
 import type { AppProps } from 'next/app'
+import { ContextWrap } from '../hooks/Context'
 
 function App({ Component, pageProps }: AppProps) {
-  return <Component {...pageProps} />
+  return (
+    <ContextWrap>
+      <Component {...pageProps} />
+    </ContextWrap>
+  )
 }
 
 export default App

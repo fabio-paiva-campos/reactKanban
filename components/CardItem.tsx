@@ -1,13 +1,21 @@
 import React from 'react'
 import { Draggable } from 'react-beautiful-dnd'
 import TransitionsModal from './Modal'
-import { ChatAlt2Icon } from '@heroicons/react/outline'
+import { useAppContext } from '../hooks/Context';
 
-function CardItem({ data, index, excluir, priority, comments }: any) {
+import { ChatAlt2Icon } from '@heroicons/react/outline'
+import { Menu, MenuItem, MenuButton } from '@szhsin/react-menu'
+
+import MoreVertIcon from '@mui/icons-material/MoreVert';
+import DeleteIcon from '@mui/icons-material/Delete';
+
+function CardItem({ data, index }: any) {
   let newID = data.id.toString()
   let newTitle = data.title
   let newCnpj = data.cnpj
   let newPorte = data.porte
+
+  const [newBoard, setNewBoard] = useAppContext()
 
   let newPriorityColor =
     data.priority === 0
@@ -37,6 +45,33 @@ function CardItem({ data, index, excluir, priority, comments }: any) {
     info: newInfo,
   }
 
+  function deleteCard(value: number) {
+    let id = value
+  
+    let cardsFinal = [...newBoard]
+    if (confirm("Excluir Card?")) {
+      cardsFinal.forEach((board) => board.items.forEach((items: any, index: any) => {
+        if (items.id === id) {
+          board.items.splice(index, 1)
+        }
+      }));
+      setNewBoard(cardsFinal)
+    }
+  }
+
+  function setPriority(value: number, priority: number) {
+    let prior = priority
+    let id = value
+
+    let priorityFinal = [...newBoard]
+    priorityFinal.forEach((board) => board.items.forEach((items: any) => {
+      if (items.id === id) {
+        items.priority = prior
+      }
+    }))
+    setNewBoard(priorityFinal)
+  }
+
   return (
     <Draggable index={index} draggableId={dataT.id}>
       {(provided) => (
@@ -49,7 +84,12 @@ function CardItem({ data, index, excluir, priority, comments }: any) {
           <label className={`LabelPriorityCard ${dataT.priorityColor}`}>
             {dataT.priorityTitle}
           </label>
-          {priority}
+          <Menu menuButton={<MenuButton><MoreVertIcon className="cardMenuIcon"/></MenuButton>}
+          direction={'left'} transition>
+            <MenuItem onClick={() => {setPriority(data.id, 0)}}>Baixa Prioridade</MenuItem>
+            <MenuItem onClick={() => {setPriority(data.id, 1)}}>Média Prioridade</MenuItem>
+            <MenuItem onClick={() => {setPriority(data.id, 2)}}>Alta Prioridade</MenuItem>
+          </Menu>
 
           <h5 className="TitleCardItemText">{dataT.title}</h5>
           <h5 className="TitleCardItemText">CNPJ: {dataT.cnpj}</h5>
@@ -68,13 +108,13 @@ function CardItem({ data, index, excluir, priority, comments }: any) {
                 return <li key={index}></li>
               })}
               <li className='MocalCall'>
-                <TransitionsModal data={dataT} comments={comments}/>
+                <TransitionsModal data={dataT}/>
               </li>
               <li>
                 <a className="imgChatIcon"><ChatAlt2Icon/>{data.obs.length}</a>
               </li>
               <li>
-                {excluir}
+                <button onClick={() => {deleteCard(data.id)}}><DeleteIcon className='deleteIcon'/></button>
               </li>
             </ul>
           </div>

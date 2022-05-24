@@ -12,11 +12,9 @@
                 "obs": [
                     {
                         "id": 1,
-                        "content": "Comentário"
-                    },
-                    {
-                        "id": 2,
-                        "content": "Comentário 2"
+                        "content": "Comentário",
+                        "add": "",
+                        "edit": ""
                     }
                 ],
                 "info": [
@@ -27,27 +25,6 @@
                       "endereço": "Praça Antonio Carlos, 02, Centro"
                     }
                   ]
-            },
-            {
-                "id": 2,
-                "priority": 3,
-                "title": "SPORT CLUB CORINTHIANS PAULISTA",
-                "cnpj": "61.902.722/0001-26",
-                "porte": 3,
-                "obs": [
-                    {
-                        "id": 1,
-                        "content": "Comentário"
-                    }
-                ],
-                "info": [
-                  {
-                    "capitalSocial": 0,
-                    "telefone": "(11) 2095-3000",
-                    "email": "comunicacao@sccorinthians.com.br",
-                    "endereço": "Rua: São Jorge, 777 ,Tatuapé"
-                  }
-                ]
             }
         ]
     },
