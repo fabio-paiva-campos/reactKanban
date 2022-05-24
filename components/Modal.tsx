@@ -10,11 +10,10 @@ import Typography from '@mui/material/Typography'
 
 import CloseIcon from '@mui/icons-material/Close';
 import DeleteIcon from '@mui/icons-material/Delete';
-import BorderColorIcon from '@mui/icons-material/BorderColor';
+import EditIcon from '@mui/icons-material/Edit';
 import CheckIcon from '@mui/icons-material/Check';
-
-import {IBoardItem} from '../hooks/Context'
-import {createId} from '../pages/index'
+EditIcon
+import {IBoardItem, createId} from '../hooks/Context'
 
 const style = {
   position: 'absolute' as 'absolute',
@@ -180,7 +179,7 @@ export default function TransitionsModal({ data }: IOnlyData) {
                           </li>
                           <li className='commentsBottom'>
                             <a onClick={() => (setSelectedComment(o.id), setEditComment(!editComment))}>
-                              <BorderColorIcon className="commentEditIcon"/>
+                              <EditIcon className="commentEditIcon"/>
                             </a>
                             <a onClick={() => (deleteComment(o.id))}><DeleteIcon className="commentDeleteIcon"/></a>
                           </li>                                           

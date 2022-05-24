@@ -3,10 +3,10 @@ import { Draggable } from 'react-beautiful-dnd'
 import TransitionsModal from './Modal'
 import { useAppContext } from '../hooks/Context';
 
-import { ChatAlt2Icon } from '@heroicons/react/outline'
 import { Menu, MenuItem, MenuButton } from '@szhsin/react-menu'
 
 import MoreVertIcon from '@mui/icons-material/MoreVert';
+import ForumIcon from '@mui/icons-material/Forum';
 import DeleteIcon from '@mui/icons-material/Delete';
 
 function CardItem({ data, index }: any) {
@@ -111,7 +111,7 @@ function CardItem({ data, index }: any) {
                 <TransitionsModal data={dataT}/>
               </li>
               <li>
-                <a className="imgChatIcon"><ChatAlt2Icon/>{data.obs.length}</a>
+                <span className="chatIcon"><ForumIcon fontSize='small'/>{data.obs.length}</span>
               </li>
               <li>
                 <button onClick={() => {deleteCard(data.id)}}><DeleteIcon className='deleteIcon'/></button>

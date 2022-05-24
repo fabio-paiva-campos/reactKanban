@@ -17,6 +17,10 @@ export interface IBoardItem {
     items: IBoardItem[];
 }
 
+export function createId() {
+    return Math.random()
+}
+
 let initialList = [{id: 0, name: "A Fazer", items: []},
                    {id: 0, name: "Em Andamento", items: []},
                    {id: 0, name: "Concluído", items: []}]
