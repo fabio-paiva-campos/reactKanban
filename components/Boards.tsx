@@ -1,4 +1,4 @@
-import React, { KeyboardEvent, useEffect, useState } from 'react'
+import React, { KeyboardEvent, useState } from 'react'
 import Layout from '../components/Layout'
 import CardItem from '../components/CardItem'
 
@@ -18,15 +18,8 @@ function Boards() {
   const [newBoard, setNewBoard] = useAppContext()
   const [editBoard, setEditBoard] = useState(false)
   const [justCreated, setJustCreated] = useState(false)
-
-  const [ready, setReady] = useState(false)
+  const [ready, setReady] = useAppContext()
   const [editCard, setEditCard] = useState(false)
-
-  useEffect(() => {
-    if (typeof window) {
-      setReady(true)
-    }
-  }, [])
 
   const onDragEnd = (re: any) => {
     if (!re.destination) return
@@ -61,7 +54,7 @@ function Boards() {
 
         if (boardId !== null) {
           const item = itemArray
-          let newBoardData = newBoard
+          let newBoardData = [...newBoard]
           if (item) {
             item.title = val
             newBoardData[boardId].items.push(item)
@@ -96,7 +89,7 @@ function Boards() {
 
       if (boardId !== null) {
         const item = itemArray
-        let newBoardData = newBoard
+        let newBoardData = [...newBoard]
         if (item) {
           item.title = val
           newBoardData[boardId].items.push(item)

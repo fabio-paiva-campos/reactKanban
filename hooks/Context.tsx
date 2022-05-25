@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { createContext, useContext, useState } from 'react';
 
 export interface IBoardItem {
@@ -22,16 +22,21 @@ export function createId() {
 }
 
 let initialList = [{id: 0, name: "A Fazer", items: []},
-                   {id: 0, name: "Em Andamento", items: []},
-                   {id: 0, name: "Concluído", items: []}]
+                   {id: 1, name: "Em Andamento", items: []},
+                   {id: 2, name: "Concluído", items: []}]
 
-const Context = createContext<[any, any]>(undefined!);
+const Context = createContext<[any, any, any, any]>(undefined!);
 
 export function ContextWrap({ children }: any) {
     const [newBoard, setNewBoard] = useState(initialList)
+    const [ready, setReady] = useState(false)
+
+    useEffect(() => {
+        setReady(true)
+      }, [])
 
     return (
-        <Context.Provider value={[newBoard, setNewBoard]}>
+        <Context.Provider value={[newBoard, setNewBoard, ready, setReady]}>
             {children}
         </Context.Provider>
     );
