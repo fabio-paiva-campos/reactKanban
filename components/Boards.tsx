@@ -18,8 +18,8 @@ function Boards() {
   const [newBoard, setNewBoard] = useAppContext()
   const [editBoard, setEditBoard] = useState(false)
   const [justCreated, setJustCreated] = useState(false)
-  const [ready, setReady] = useAppContext()
   const [editCard, setEditCard] = useState(false)
+  const [ready] = useAppContext()
 
   const onDragEnd = (re: any) => {
     if (!re.destination) return
@@ -107,7 +107,7 @@ function Boards() {
     editFunctionClick(id, setEditBoard)
   }
 
-  function CreateBoardAction() {
+  function createBoardAction() {
     let count = newBoard.length + 1
     const board = {
       id: createId(),
@@ -167,7 +167,7 @@ function Boards() {
           </div>
           <ul className="CreateNewColumnList">
             <li>
-              <button onClick={() => CreateBoardAction()} className="">
+              <button onClick={() => createBoardAction()} className="">
                 <AddIcon className="IconeMaisCreateNewBoard" />
               </button>
             </li>
