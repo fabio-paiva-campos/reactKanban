@@ -8,6 +8,8 @@ import { Menu, MenuItem, MenuButton } from '@szhsin/react-menu'
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import ForumIcon from '@mui/icons-material/Forum';
 import DeleteIcon from '@mui/icons-material/Delete';
+import { setPriority } from './utils/CardItem/setPriority';
+import { deleteCard } from './utils/CardItem/deleteCard';
 
 function CardItem({ data, index }: any) {
   let newID = data.id.toString()
@@ -45,33 +47,6 @@ function CardItem({ data, index }: any) {
     info: newInfo,
   }
 
-  function deleteCard(value: number) {
-    let id = value
-  
-    let cardsFinal = [...newBoard]
-    if (confirm("Excluir Card?")) {
-      cardsFinal.forEach((board) => board.items.forEach((items: any, index: any) => {
-        if (items.id === id) {
-          board.items.splice(index, 1)
-        }
-      }));
-      setNewBoard(cardsFinal)
-    }
-  }
-
-  function setPriority(value: number, priority: number) {
-    let prior = priority
-    let id = value
-
-    let priorityFinal = [...newBoard]
-    priorityFinal.forEach((board) => board.items.forEach((items: any) => {
-      if (items.id === id) {
-        items.priority = prior
-      }
-    }))
-    setNewBoard(priorityFinal)
-  }
-
   return (
     <Draggable index={index} draggableId={dataT.id}>
       {(provided) => (
@@ -86,9 +61,9 @@ function CardItem({ data, index }: any) {
           </label>
           <Menu menuButton={<MenuButton><MoreVertIcon className="cardMenuIcon"/></MenuButton>}
           direction={'left'} transition>
-            <MenuItem onClick={() => {setPriority(data.id, 0)}}>Baixa Prioridade</MenuItem>
-            <MenuItem onClick={() => {setPriority(data.id, 1)}}>Média Prioridade</MenuItem>
-            <MenuItem onClick={() => {setPriority(data.id, 2)}}>Alta Prioridade</MenuItem>
+            <MenuItem onClick={() => {setPriority(data.id, 0, newBoard, setNewBoard)}}>Baixa Prioridade</MenuItem>
+            <MenuItem onClick={() => {setPriority(data.id, 1, newBoard, setNewBoard)}}>Média Prioridade</MenuItem>
+            <MenuItem onClick={() => {setPriority(data.id, 2, newBoard, setNewBoard)}}>Alta Prioridade</MenuItem>
           </Menu>
 
           <h5 className="TitleCardItemText">{dataT.title}</h5>
@@ -114,7 +89,7 @@ function CardItem({ data, index }: any) {
                 <span className="chatIcon"><ForumIcon fontSize='small'/>{data.obs.length}</span>
               </li>
               <li>
-                <button onClick={() => {deleteCard(data.id)}}><DeleteIcon className='deleteIcon'/></button>
+                <button onClick={() => {deleteCard(data.id, newBoard, setNewBoard)}}><DeleteIcon className='deleteIcon'/></button>
               </li>
             </ul>
           </div>
