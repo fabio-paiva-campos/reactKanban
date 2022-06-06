@@ -13,6 +13,9 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
 import CheckIcon from '@mui/icons-material/Check';
 import {IBoardItem, createId} from '../hooks/Context'
+import { editCommentAction } from './utils/Modal/editCommentAction';
+import { deleteComment } from './utils/Modal/deleteComment';
+import { addComment } from './utils/Modal/addComment';
 
 const style = {
   position: 'absolute' as 'absolute',
@@ -38,71 +41,6 @@ export default function TransitionsModal({ data }: IOnlyData) {
   const [newBoard, setNewBoard] = useAppContext()
   const [selectedComment, setSelectedComment] = useState(0)
   const [editComment, setEditComment] = useState(false)
-
-  const addComment = (id: any) => {
-    let val: string
-    val = (document.getElementById("addCommentText") as HTMLInputElement).value
-    let dataId:number = Number(id)
-
-    var today = new Date()
-    let dateTime: string = 'Adc. em ' + today.getDate() + '/' + (today.getMonth() + 1) + '/' + today.getFullYear() +
-                            ' às ' + today.getHours() + ':' + today.getMinutes()
-
-    if(val !== '') {
-      const comment = {
-        id: createId(),
-        content: val,
-        add: dateTime,
-        edit: ''
-      }
-      let newComment = [...newBoard]
-      newComment.forEach((board) => board.items.forEach((items: any) => {
-        if (items.id === dataId) {
-          items.obs.push(comment)
-        }
-      }))
-      setNewBoard(newComment),
-      (document.getElementById("addCommentText") as HTMLInputElement).value = ''
-    }
-  }
-
-  function editCommentAction(value: number) {
-    let id = value
-    let edit: string
-    edit = (document.getElementById("editCommentText") as HTMLInputElement).value
-
-    var today = new Date()
-    let dateTime: string = 'Editado em ' + today.getDate() + '/' + (today.getMonth() + 1) + '/' + today.getFullYear() +
-                            ' às ' + today.getHours() + ':' + today.getMinutes()
-
-    let commentFinal = [...newBoard]
-    commentFinal.forEach((board) => board.items.forEach((items: any) =>
-    items.obs.forEach((obs: any) => {
-        if (obs.id === id) {
-          obs.content = edit
-          obs.edit = dateTime
-        }
-      }
-    )))
-    setNewBoard(commentFinal)
-    setEditComment(false)
-  }
-
-  function deleteComment(value: number) {
-    let id = value
-  
-    let commentFinal = [...newBoard]
-    if (confirm("Excluir Comentário?")) {
-      commentFinal.forEach((board) => board.items.forEach((items: any) =>
-      items.obs.forEach((obs: any, index: any) => {
-          if (obs.id === id) {
-            items.obs.splice(index, 1)
-          }
-        }
-      )))
-      setNewBoard(commentFinal)
-    }
-  }
 
   return (
     <div>
@@ -156,7 +94,7 @@ export default function TransitionsModal({ data }: IOnlyData) {
                               <textarea id="editCommentText" className="editCommentText" autoFocus rows={3} data-id={o.id} defaultValue={o.content}/>
                             </li>
                             <li>
-                              <button className="editCommentIcon" onClick={() => {editCommentAction(o.id), setSelectedComment(o.id),
+                              <button className="editCommentIcon" onClick={() => {editCommentAction(o.id, newBoard, setNewBoard, setEditComment), setSelectedComment(o.id),
                                 setEditComment(!editComment)}}>
                                 <CheckIcon />
                               </button>
@@ -180,7 +118,7 @@ export default function TransitionsModal({ data }: IOnlyData) {
                             <a onClick={() => (setSelectedComment(o.id), setEditComment(!editComment))}>
                               <EditIcon className="commentEditIcon"/>
                             </a>
-                            <a onClick={() => (deleteComment(o.id))}><DeleteIcon className="commentDeleteIcon"/></a>
+                            <a onClick={() => (deleteComment(o.id, newBoard, setNewBoard))}><DeleteIcon className="commentDeleteIcon"/></a>
                           </li>                                           
                         </ul>
                       )}
@@ -191,7 +129,7 @@ export default function TransitionsModal({ data }: IOnlyData) {
                 
               <span className='addCommentArea'>
                 <textarea id="addCommentText" className="addCommentForm" rows={1} placeholder={'Adicionar Observação'}/>
-                <button className="addCommentButton" onClick={() => (addComment(data.id))}><CheckIcon /></button>
+                <button className="addCommentButton" onClick={() => (addComment(data.id, newBoard, setNewBoard))}><CheckIcon /></button>
               </span>
           </Box>
         </Fade>
