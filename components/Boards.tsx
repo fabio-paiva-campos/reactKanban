@@ -1,4 +1,4 @@
-import React, { KeyboardEvent, useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import Layout from '../components/Layout'
 import CardItem from '../components/CardItem'
 
@@ -11,15 +11,26 @@ import { DragDropContext, Droppable } from 'react-beautiful-dnd'
 import { Menu, MenuItem, MenuButton } from '@szhsin/react-menu'
 import '@szhsin/react-menu/dist/index.css'
 import '@szhsin/react-menu/dist/transitions/slide.css';
-import { useAppContext, createId } from '../hooks/Context';
+import { useAppContext } from '../hooks/Context';
+
+import { editFunction } from './utils/Boards/editFunction';
+import { editFunctionClick } from './utils/Boards/editFunctionClick';
+import { createBoardAction } from './utils/Boards/createBoardAction';
+import { conditionalDelete } from './utils/Boards/conditionalDelete';
+import { deleteBoard } from './utils/Boards/deleteBoard';
+import { createCard } from './utils/Boards/createCard';
 
 function Boards() {
-  const [selectedBoard, setSelectedBoard] = useState(0)
   const [newBoard, setNewBoard] = useAppContext()
+  const [selectedBoard, setSelectedBoard] = useState(0)
   const [editBoard, setEditBoard] = useState(false)
-  const [justCreated, setJustCreated] = useState(false)
   const [editCard, setEditCard] = useState(false)
-  const [ready] = useAppContext()
+  const [justCreated, setJustCreated] = useState(false)
+  const [ready, setReady] = useState(false)
+
+  useEffect(() => {
+    setReady(true)
+  }, [])
 
   const onDragEnd = (re: any) => {
     if (!re.destination) return
@@ -38,126 +49,6 @@ function Boards() {
     setNewBoard(newBoardData)
   }
 
-  const editFunction = (
-    e: KeyboardEvent<HTMLTextAreaElement>,
-    funcValue: Function,
-    itemArray?: any
-    ) => {
-
-    if (e.key == 'Enter') {
-      const val = e.currentTarget.value
-      if (val.length === 0) {
-        funcValue(false)
-      } else {
-        let dataId = (e.target as Element).attributes.getNamedItem('data-id')
-        const boardId = dataId && Number(dataId.value)
-
-        if (boardId !== null) {
-          const item = itemArray
-          let newBoardData = [...newBoard]
-          if (item) {
-            item.title = val
-            newBoardData[boardId].items.push(item)
-          } else {
-            newBoardData[boardId].name = val
-          }
-          setNewBoard(newBoardData)
-          funcValue(false)
-          e.currentTarget.value = ''
-        }
-      }
-    }
-  }
-
-  const editBoardAction = (e: KeyboardEvent<HTMLTextAreaElement>) => {
-    setJustCreated(false)
-    editFunction(e, setEditBoard)
-  }
-
-  const editFunctionClick = (
-    id: number,
-    funcValue: Function,
-    itemArray?: any,
-    ) => {
-    let val: string
-    val = (document.getElementById("boardEditForm") as HTMLInputElement).value
-
-    if (val.length === 0) {
-      funcValue(false)        
-    } else {
-      const boardId = id
-
-      if (boardId !== null) {
-        const item = itemArray
-        let newBoardData = [...newBoard]
-        if (item) {
-          item.title = val
-          newBoardData[boardId].items.push(item)
-        } else {
-          newBoardData[boardId].name = val
-        }
-        setNewBoard(newBoardData)
-        funcValue(false)
-      }
-    }
-  }
-
-  const editBoardActionClick = (id: number) => {
-    setJustCreated(false)
-    editFunctionClick(id, setEditBoard)
-  }
-
-  function createBoardAction() {
-    let count = newBoard.length + 1
-    const board = {
-      id: createId(),
-      name: 'Novo Board ' + count,
-      items: [],
-    }
-    setNewBoard([...newBoard, board])
-    setSelectedBoard(count-1)
-    setJustCreated(true)
-    setEditBoard(true)
-  }
-
-  function deleteBoard(value: number) {
-    let id = value
-    console.log(id)
-
-    let boardsFinal = [...newBoard]
-    if (confirm('Excluir Board?')) {
-      boardsFinal.forEach((board, index) => {
-        if (board.id === id) {
-          boardsFinal.splice(index, 1)
-        }
-      });
-      setNewBoard(boardsFinal)
-    }
-  }
-
-  function conditionalDelete(value:number) {
-    let id = value
-
-    if (justCreated == true) {
-      deleteBoard(id)
-      setJustCreated(false)
-    } else {
-      setEditBoard(false)
-    }
-  }
-
-  const createCard = (e: KeyboardEvent<HTMLTextAreaElement>) => {
-    const item = {
-      id: createId(),
-      priority: 0,
-      cnpj: 0,
-      porte: 0,
-      obs: [],
-      info: [],
-    }
-    editFunction(e, setEditCard, item)
-  }
-
   return (
     <Layout>
       <div className="GeneralAreaKanbanContent">
@@ -167,8 +58,8 @@ function Boards() {
           </div>
           <ul className="CreateNewColumnList">
             <li>
-              <button onClick={() => createBoardAction()} className="">
-                <AddIcon className="IconeMaisCreateNewBoard" />
+              <button onClick={() => createBoardAction(newBoard, setNewBoard, setSelectedBoard, setJustCreated, setEditBoard)} className="">
+                <AddIcon className="IconeMaisCreateNewBoard"/>
               </button>
             </li>
           </ul>
@@ -176,14 +67,13 @@ function Boards() {
         {ready && (
           <DragDropContext onDragEnd={onDragEnd}>
             <div className="BoardCollumGeneral">
-              {newBoard?.map((board: any, id: any) => {
+              {newBoard?.map((board: any, id: number) => {
                 return (
                   <div key={board.id}>
                     <Droppable droppableId={id.toString()}>
                       {(provided, snapshot) => (
                         <div {...provided.droppableProps} ref={provided.innerRef}>
-                          <div className={`CollumGeneralArea
-                            ${snapshot.isDraggingOver && 'GreenColor'}`}>
+                          <div className={`CollumGeneralArea ${snapshot.isDraggingOver && 'GreenColor'}`}>
                             <span className="RedLineCollum">
                             </span>
                             <h4 className="TitleBoardArea">
@@ -191,17 +81,17 @@ function Boards() {
                                 {editBoard && selectedBoard === id ? (
                                   <div>
                                     <textarea id="boardEditForm" className="textEdit" autoFocus defaultValue={board.name}
-                                    data-id={id} rows={1} onKeyDown={(e) => editBoardAction(e)}></textarea>
-                                    <button className="DotsVerticalIcon" onClick={() => editBoardActionClick(id)}><CheckIcon /></button>
-                                    <button className="DotsVerticalIcon" onClick={() => conditionalDelete(board.id)}><CloseIcon /></button>
+                                    data-id={id} rows={1} onKeyDown={(e) => {setJustCreated(false), editFunction(id, e, newBoard, setNewBoard, setEditBoard)}}></textarea>
+                                    <button className="DotsVerticalIcon" onClick={() => {setJustCreated(false), editFunctionClick(id, newBoard, setNewBoard, setEditBoard)}}><CheckIcon/></button>
+                                    <button className="DotsVerticalIcon" onClick={() => conditionalDelete(board.id, newBoard, setNewBoard, justCreated, setJustCreated, setEditBoard)}><CloseIcon/></button>
                                   </div>
                                 ) : (
                                   <span>{board.name}</span>
                                 )}
                               </span>
-                              <Menu menuButton={<MenuButton><MoreVertIcon className="DotsVerticalIcon" /></MenuButton>} transition>
+                              <Menu menuButton={<MenuButton><MoreVertIcon className="DotsVerticalIcon"/></MenuButton>} transition>
                                 <MenuItem onClick={() => { setSelectedBoard(id), setEditBoard(true) }}>Editar</MenuItem>
-                                <MenuItem onClick={() => { deleteBoard(board.id) }}>Excluir</MenuItem>
+                                <MenuItem onClick={() => { deleteBoard(board.id, newBoard, setNewBoard) }}>Excluir</MenuItem>
                               </Menu>
                             </h4>
                             <div className="CardAreaInCollum"
@@ -209,7 +99,7 @@ function Boards() {
                               {board.items?.length > 0 &&
                                 board.items.map((item: any, iIndex: any) => {
                                   return (
-                                    <CardItem key={item.id} data={item} index={iIndex} className="CardItemClass" />
+                                    <CardItem key={item.id} data={item} index={iIndex} className="CardItemClass"/>
                                   )
                                 })}
                               {provided.placeholder}
@@ -218,7 +108,7 @@ function Boards() {
                             {editCard && selectedBoard === id ? (
                               <div className="AroundTextAreaAddTask">
                                 <textarea id="taskTitle" className="addTaskForm" autoFocus rows={3} placeholder="Descrição do Card"
-                                data-id={id} onKeyDown={(e) => createCard(e)} />
+                                data-id={id} onKeyDown={(e) => createCard(id, e, setEditCard, newBoard, setNewBoard)}/>
                                 <button onClick={() => {setEditCard(false)}}>x</button>
                               </div>
                             ) : (
@@ -226,7 +116,7 @@ function Boards() {
                                 className="ButtonAddTask"
                                 onClick={() => { setSelectedBoard(id), setEditCard(true) }}>
                                 <span>Adicionar Card</span>
-                                <AddIcon className="PlusCircleIcon" />
+                                <AddIcon className="PlusCircleIcon"/>
                               </button>
                             )}
                           </div>
