@@ -18,7 +18,8 @@ export interface IBoardItem {
 }
 
 export function createId() {
-    return Math.random()
+    //ID SEMPRE TEM QUE SER NUMEROS INTEIROS E GRANDES
+    return Math.floor(Math.random() *(99999999999999 - 1 ))+ 3
 }
 
 let initialList = [{id: 0, name: "A Fazer", items: [{id: 1, priority: 0,
