@@ -11,7 +11,7 @@ import { DragDropContext, Droppable } from 'react-beautiful-dnd'
 import { Menu, MenuItem, MenuButton } from '@szhsin/react-menu'
 import '@szhsin/react-menu/dist/index.css'
 import '@szhsin/react-menu/dist/transitions/slide.css';
-import { useAppContext } from '../hooks/Context';
+import { IBoardData, useAppContext } from '../hooks/Context';
 
 import { editFunction } from './utils/Boards/editFunction';
 import { editFunctionClick } from './utils/Boards/editFunctionClick';
@@ -34,18 +34,17 @@ function Boards() {
 
   const onDragEnd = (re: any) => {
     if (!re.destination) return
-    let newBoardData = newBoard
-    var dragItem =
-      newBoardData[parseInt(re.source.droppableId)].items[re.source.index]
-    newBoardData[parseInt(re.source.droppableId)].items.splice(
-      re.source.index,
-      1
-    )
-    newBoardData[parseInt(re.destination.droppableId)].items.splice(
-      re.destination.index,
-      0,
-      dragItem
-    )
+    let newBoardData = newBoard;
+
+    if(re.source.droppableId){
+      console.log(re.source.droppableId);
+    }
+
+    var dragItem = newBoardData[parseInt(re.source.droppableId)].items[re.source.index];
+
+    newBoardData[parseInt(re.source.droppableId)].items.splice(re.source.index,1)
+
+    newBoardData[parseInt(re.destination.droppableId)].items.splice(re.destination.index, 0, dragItem)
     setNewBoard(newBoardData)
   }
 
@@ -67,10 +66,12 @@ function Boards() {
         {ready && (
           <DragDropContext onDragEnd={onDragEnd}>
             <div className="BoardCollumGeneral">
-              {newBoard?.map((board: any, id: number) => {
+              {newBoard?.map((board: IBoardData, key: number) => {
+                let id = board.id;
+                console.log(id)
                 return (
-                  <div key={board.id}>
-                    <Droppable droppableId={id.toString()}>
+                  <div key={id}>
+                    <Droppable droppableId={key.toString()}>
                       {(provided, snapshot) => (
                         <div {...provided.droppableProps} ref={provided.innerRef}>
                           <div className={`CollumGeneralArea ${snapshot.isDraggingOver && 'GreenColor'}`}>
@@ -83,7 +84,7 @@ function Boards() {
                                     <textarea id="boardEditForm" className="textEdit" autoFocus defaultValue={board.name}
                                     data-id={id} rows={1} onKeyDown={(e) => {setJustCreated(false), editFunction(id, e, newBoard, setNewBoard, setEditBoard)}}></textarea>
                                     <button className="DotsVerticalIcon" onClick={() => {setJustCreated(false), editFunctionClick(id, newBoard, setNewBoard, setEditBoard)}}><CheckIcon/></button>
-                                    <button className="DotsVerticalIcon" onClick={() => conditionalDelete(board.id, newBoard, setNewBoard, justCreated, setJustCreated, setEditBoard)}><CloseIcon/></button>
+                                    <button className="DotsVerticalIcon" onClick={() => conditionalDelete(id, newBoard, setNewBoard, justCreated, setJustCreated, setEditBoard)}><CloseIcon/></button>
                                   </div>
                                 ) : (
                                   <span>{board.name}</span>
@@ -91,7 +92,7 @@ function Boards() {
                               </span>
                               <Menu menuButton={<MenuButton><MoreVertIcon className="DotsVerticalIcon"/></MenuButton>} transition>
                                 <MenuItem onClick={() => { setSelectedBoard(id), setEditBoard(true) }}>Editar</MenuItem>
-                                <MenuItem onClick={() => { deleteBoard(board.id, newBoard, setNewBoard) }}>Excluir</MenuItem>
+                                <MenuItem onClick={() => { deleteBoard(id, newBoard, setNewBoard) }}>Excluir</MenuItem>
                               </Menu>
                             </h4>
                             <div className="CardAreaInCollum"

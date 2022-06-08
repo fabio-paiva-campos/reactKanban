@@ -1,13 +1,13 @@
-export function deleteBoard(value: number, newBoard: any, setNewBoard: any) {
+import { IBoardData, IBoardItem } from "../../../hooks/Context";
+
+export async function deleteBoard(value: number, newBoard: IBoardData[], setNewBoard: any) {
     let id = value
 
-    let boardsFinal = [...newBoard]
+    let boardsFinal = JSON.parse(JSON.stringify(newBoard))
+
     if (confirm('Excluir Board?')) {
-      boardsFinal.forEach((board, index) => {
-        if (board.id === id) {
-          boardsFinal.splice(index, 1)
-        }
-      });
+      boardsFinal.find((p: IBoardItem, key: number) => p.id === id && (boardsFinal.splice(key, 1)));
+
       setNewBoard(boardsFinal)
     }
   }

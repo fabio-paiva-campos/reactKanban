@@ -1,12 +1,14 @@
-export function deleteComment(value: number, newBoard: any, setNewBoard: any) {
+import { IBoardData, IBoardItem } from "../../../hooks/Context"
+
+export function deleteComment(value: number, newBoard: IBoardData, setNewBoard: any) {
     let id = value
   
-    let commentFinal = [...newBoard]
+    let commentFinal = JSON.parse(JSON.stringify(newBoard))
     if (confirm("Excluir Comentário?")) {
-      commentFinal.forEach((board) => board.items.forEach((items: any) =>
-      items.obs.forEach((obs: any, index: any) => {
+      commentFinal.forEach((board: IBoardData) => board.items.forEach((items: IBoardItem) =>
+      items.obs?.forEach((obs: any, index: any) => {
           if (obs.id === id) {
-            items.obs.splice(index, 1)
+            items.obs?.splice(index, 1)
           }
         }
       )))
