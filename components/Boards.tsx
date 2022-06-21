@@ -13,12 +13,12 @@ import '@szhsin/react-menu/dist/index.css'
 import '@szhsin/react-menu/dist/transitions/slide.css';
 import { IBoardData, useAppContext } from '../hooks/Context';
 
-import { editFunction } from './utils/Boards/editFunction';
-import { editFunctionClick } from './utils/Boards/editFunctionClick';
-import { createBoardAction } from './utils/Boards/createBoardAction';
-import { conditionalDelete } from './utils/Boards/conditionalDelete';
-import { deleteBoard } from './utils/Boards/deleteBoard';
-import { createCard } from './utils/Boards/createCard';
+import { editFunction } from './functions/Boards/editFunction';
+import { editFunctionClick } from './functions/Boards/editFunctionClick';
+import { createBoardAction } from './functions/Boards/createBoardAction';
+import { conditionalDelete } from './functions/Boards/conditionalDelete';
+import { deleteBoard } from './functions/Boards/deleteBoard';
+import { createCard } from './functions/Boards/createCard';
 
 function Boards() {
   const [newBoard, setNewBoard] = useAppContext()
@@ -53,7 +53,7 @@ function Boards() {
       <div className="GeneralAreaKanbanContent">
         <div className="GeneralKanbanHeader">
           <div className="HeaderTextArea">
-            <h4 className="">Kanbão</h4>
+            <h4 className="">Kanban</h4>
           </div>
           <ul className="CreateNewColumnList">
             <li>

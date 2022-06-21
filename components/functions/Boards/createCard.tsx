@@ -1,6 +1,5 @@
 import { KeyboardEvent } from 'react'
-import { createId, IBoardData, useAppContext } from '../../../hooks/Context'
-import { editFunction } from './editFunction'
+import { createId, IBoardData } from '../../../hooks/Context'
 
 export const createCard = (index: number, e: KeyboardEvent<HTMLTextAreaElement>, setEditBoard: any, newBoard: IBoardData[], setNewBoard: any) => {
     const card = {

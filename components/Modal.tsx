@@ -13,9 +13,9 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
 import CheckIcon from '@mui/icons-material/Check';
 import {IBoardItem, createId} from '../hooks/Context'
-import { editCommentAction } from './utils/Modal/editCommentAction';
-import { deleteComment } from './utils/Modal/deleteComment';
-import { addComment } from './utils/Modal/addComment';
+import { editCommentAction } from './functions/Modal/editCommentAction';
+import { deleteComment } from './functions/Modal/deleteComment';
+import { addComment } from './functions/Modal/addComment';
 
 const style = {
   position: 'absolute' as 'absolute',

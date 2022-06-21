@@ -8,8 +8,8 @@ import { Menu, MenuItem, MenuButton } from '@szhsin/react-menu'
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import ForumIcon from '@mui/icons-material/Forum';
 import DeleteIcon from '@mui/icons-material/Delete';
-import { setPriority } from './utils/CardItem/setPriority';
-import { deleteCard } from './utils/CardItem/deleteCard';
+import { setPriority } from './functions/CardItem/setPriority';
+import { deleteCard } from './functions/CardItem/deleteCard';
 
 function CardItem({ data, index }: any) {
   let newID = data.id.toString()

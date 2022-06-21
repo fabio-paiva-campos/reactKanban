@@ -18,18 +18,10 @@ export interface IBoardItem {
 }
 
 export function createId() {
-    //ID SEMPRE TEM QUE SER NUMEROS INTEIROS E GRANDES
     return Math.floor(Math.random() *(99999999999999 - 1 ))+ 3
 }
 
-let initialList = [{id: 0, name: "A Fazer", items: [{id: 1, priority: 0,
-                    title: "Imedia Comunicação", cnpj: "12.312.312/0001-12", porte: 0, obs: [],
-                    info: [{
-                      capitalsocial: 0,
-                      telefone: "(35) 3295-6016",
-                      email: "comercial@imediacomunicacao.com.br",
-                      endereço: "Praça Antônio Carlos, 02 - Centro, Machado - MG"
-                    }]}]},
+let initialList = [{id: 0, name: "A Fazer", items: []},
                   {id: 1, name: "Em Andamento", items: []},
                   {id: 2, name: "Concluído", items: []}]
 
