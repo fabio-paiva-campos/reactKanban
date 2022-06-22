@@ -8,7 +8,7 @@ export function createBoardAction(newBoard: any, setNewBoard: any, setSelectedBo
       items: [],
     }
     setNewBoard([...newBoard, board])
-    setSelectedBoard(count-1)
+    setSelectedBoard(board.id)
     setJustCreated(true)
     setEditBoard(true)
 }
